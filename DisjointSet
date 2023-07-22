@@ -1,0 +1,64 @@
+#include<bits/stdc++.h>
+using namespace std;
+class DisjointSet
+{
+    vector<int> parent,rank,size;
+    public:
+    DisjointSet(int n)
+    {
+        rank.resize(n+1,0);
+        parent.resize(n+1);
+        size.resize(n+1);
+        for(int i=0;i<=n;i++){
+           parent[i]=i;
+           size[i]=1;
+        }
+    }
+    //path compression
+    int findUPar(int node)
+    {
+        if(node==parent[node])
+        return node;
+        return parent[node] = findUPar(parent[node]);
+    }
+    void UnionByRank(int u,int v)
+    {
+        int upar_u=findUPar(u);
+        int upar_v=findUPar(v);
+        if(upar_u==upar_v)return;
+        if(rank[upar_u]<rank[upar_v]){
+            parent[upar_u]=upar_v;
+        }else if(rank[upar_v]<rank[upar_u]){
+            parent[upar_v]=upar_u;
+        }else{
+            parent[upar_v]=upar_u;
+            rank[upar_u]++;
+        }
+    }
+    void UnionBySize(int u,int v)
+    {
+        int upar_u=findUPar(u);
+        int upar_v=findUPar(v);
+        if(upar_u==upar_v)return;
+        if(size[upar_u]<size[upar_v]){
+            parent[upar_u]=upar_v;
+            size[upar_v]+=size[upar_u];
+        }else{
+            parent[upar_v]=upar_u;
+            size[upar_u]+=size[upar_v];
+        }
+    }
+};
+int main()
+{
+    DisjointSet ds(7);
+    ds.UnionBySize(1,2);
+    ds.UnionBySize(2,3);
+    ds.UnionBySize(4,5);
+    if(ds.findUPar(6)==ds.findUPar(7))cout<<"same\n";
+    else cout<<"Not Same\n";
+    ds.UnionBySize(6,7);
+    if(ds.findUPar(6)==ds.findUPar(7))cout<<"same\n";
+    else cout<<"Not Same\n";
+    ds.UnionBySize(5,6);
+}
